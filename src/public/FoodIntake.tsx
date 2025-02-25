@@ -48,16 +48,17 @@ const FoodIntake: React.FC<FoodIntakeProps> = ({ userId }) => {
   /** ✅ Log food intake */
   const handleLogFoodIntake = () => {
     if (!userId || !selectedFood) return;
-
+  
     const selectedFoodItem = safeFoods.find((item: FoodItem) => item.name === selectedFood);
     if (!selectedFoodItem) return;
-
+  
     logFoodIntake(
       { userId, caloriesConsumed: selectedFoodItem.calorie, foodName: selectedFoodItem.name },
       {
         onSuccess: () => {
           console.log("Food intake logged!");
           setSelectedFood(""); // Reset selection
+          refetch(); // Refetch the list of foods after logging intake
         },
       }
     );
