@@ -8,7 +8,7 @@ const Notifications: React.FC = () => {
   
     return (
       <div className="bg-gray-900 p-6 rounded-xl shadow-lg w-full">
-        <h2 className="text-xl text-purple-300 font-semibold mb-4">🔔 Notifications</h2>
+        <h2 className="text-xl text-purple-300 font-semibold mb-4">🔔 Reminder</h2>
         <ul className="text-sm text-gray-300">
           {notifications.map((notification, index) => (
             <li key={index} className="flex justify-between mb-2">
