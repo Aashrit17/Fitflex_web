@@ -1,25 +1,31 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useUpdateWaterIntake } from "./query"; // ✅ Import the mutation hook
 
 interface WaterIntakeTrackerProps {
-  waterIntake: number;
-  setWaterIntake: React.Dispatch<React.SetStateAction<number>>;
+  waterIntake?: number; // Make waterIntake optional in case it's not passed down
+  setWaterIntake?: React.Dispatch<React.SetStateAction<number>>;
 }
 
 const WaterIntakeTracker: React.FC<WaterIntakeTrackerProps> = ({
-  waterIntake,
+  waterIntake = 0, // Default to 0 if not passed as a prop
   setWaterIntake,
 }) => {
   const [customGoal, setCustomGoal] = useState(3000); // Default daily goal
   const { mutate: updateWaterIntake, isPending } = useUpdateWaterIntake();
+  const [currentWaterIntake, setCurrentWaterIntake] = useState(waterIntake); // Local state for water intake
 
   // Get user ID from local storage or context
   const userId = localStorage.getItem("userId");
 
   // Handle increasing water intake by 250ml
   const handleIncrease = () => {
-    const newWaterIntake = waterIntake + 250;
-    setWaterIntake(newWaterIntake);
+    const newWaterIntake = currentWaterIntake + 250;
+    setCurrentWaterIntake(newWaterIntake); // Update local state
+
+    // If setWaterIntake is passed from parent, update the parent state as well
+    if (setWaterIntake) {
+      setWaterIntake(newWaterIntake);
+    }
 
     // Update water intake on the server
     if (userId) {
@@ -29,8 +35,13 @@ const WaterIntakeTracker: React.FC<WaterIntakeTrackerProps> = ({
 
   // Handle decreasing water intake by 50ml
   const handleDecrease = () => {
-    const newWaterIntake = Math.max(waterIntake - 50, 0);
-    setWaterIntake(newWaterIntake);
+    const newWaterIntake = Math.max(currentWaterIntake - 50, 0);
+    setCurrentWaterIntake(newWaterIntake); // Update local state
+
+    // If setWaterIntake is passed from parent, update the parent state as well
+    if (setWaterIntake) {
+      setWaterIntake(newWaterIntake);
+    }
 
     // Update water intake on the server
     if (userId) {
@@ -38,7 +49,7 @@ const WaterIntakeTracker: React.FC<WaterIntakeTrackerProps> = ({
     }
   };
 
-  const progress = (waterIntake / customGoal) * 100;
+  const progress = (currentWaterIntake / customGoal) * 100;
 
   return (
     <div className="bg-gray-900 p-6 rounded-xl shadow-lg w-full text-white">
@@ -64,7 +75,7 @@ const WaterIntakeTracker: React.FC<WaterIntakeTrackerProps> = ({
         >
           -50ml
         </button>
-        <span className="text-lg font-bold">{waterIntake} ml</span>
+        <span className="text-lg font-bold">{currentWaterIntake} ml</span>
         <button
           onClick={handleIncrease}
           className="px-3 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg"
@@ -84,9 +95,9 @@ const WaterIntakeTracker: React.FC<WaterIntakeTrackerProps> = ({
 
       {/* Goal Status */}
       <p className="text-sm text-gray-300 mt-2">
-        {waterIntake >= customGoal
+        {currentWaterIntake >= customGoal
           ? "✅ Goal reached! Stay hydrated!"
-          : `🚰 ${customGoal - waterIntake} ml left to reach your goal`}
+          : `🚰 ${customGoal - currentWaterIntake} ml left to reach your goal`}
       </p>
     </div>
   );

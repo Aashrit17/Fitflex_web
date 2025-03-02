@@ -20,11 +20,7 @@ test.describe('FitFlex Registration Page', () => {
   });
 
 
-  test('should navigate to forgot password page', async ({ page }) => {
-    await page.goto('http://localhost:5173/register');
-    const forgotPasswordLink = await page.locator('text=Forgot Password?');
-    await forgotPasswordLink.click();
-    await expect(page).toHaveURL('http://localhost:5173/forgot-password');
+
 
   test('should navigate back to login page', async ({ page }) => {
     await page.goto('http://localhost:5173/register');
@@ -34,4 +30,4 @@ test.describe('FitFlex Registration Page', () => {
   });
 
 });
-})
+

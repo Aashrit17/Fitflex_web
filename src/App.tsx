@@ -1,10 +1,9 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'; // Import QueryClient and QueryClientProvider
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
-import './App.css';
 import DashboardView from './public/home';
 import LoginView from './public/login';
-import RegistrationView from './public/registration';
 import ProgressPage from './public/progress';
+import RegistrationView from './public/registration';
 
 
 // Create a QueryClient instance

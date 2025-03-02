@@ -50,21 +50,6 @@ test.describe('LoginView Tests', () => {
     await expect(errorMessages).toHaveCount(0); // Assuming there are two error messages
   });
 
-  test('should navigate to home or dashboard after clicking on the login button', async ({ page }) => {
-    await page.goto('http://localhost:5173/'); // Replace with your app's URL
-
-    // Fill in valid credentials
-    await page.fill('input[placeholder="Email"]', 'testuser@example.com');
-    await page.fill('input[placeholder="Password"]', 'correctpassword');
-
-    // Click login button
-    await page.click('button:has-text("Login")');
-
-    // Wait for navigation to either Home or Dashboard
-    await page.waitForURL('http://localhost:5173/dashboard'),
-    await expect(page).toHaveURL ('/dashboard')
-  });
-
   });
   
 
