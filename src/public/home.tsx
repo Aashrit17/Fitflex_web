@@ -12,15 +12,24 @@ import ProgressTracker from "./ProgressTracker";
 import SleepTracker from "./SleepTracker";
 import UserProfile from "./UserProfile";
 import WaterIntakeTracker from "./WaterIntakeTracker";
+import ProgressPage from "./progress";  // Import ProgressPage
 import { ExerciseItem, FoodItem } from "./types";
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate(); // Initialize navigation
-  const [food, setFood] = useState<FoodItem[]>([]);
-  const [exercise, setExercise] = useState<ExerciseItem[]>([]);
-  const [goal, setGoal] = useState(2000);
-  const [hoursSlept, setHoursSlept] = useState(8);
-  const [waterIntake, setWaterIntake] = useState(1500);
+  
+  // Ensure userId is either undefined or string, not null
+  const userId = localStorage.getItem("userId") ?? undefined;
+  if (!userId) {
+    navigate("/"); // Redirect to login if userId is not found
+  }
+
+  // Maintain state for each section
+  const [food, setFood] = useState<FoodItem[]>([]); // Food state (for managing the food intake)
+  const [exercise, setExercise] = useState<ExerciseItem[]>([]); // Exercise state
+  const [goal, setGoal] = useState(2000); // Goal state
+  const [hoursSlept, setHoursSlept] = useState(8); // Sleep state
+  const [waterIntake, setWaterIntake] = useState(1500); // Water intake state
   const [name, setName] = useState("John Doe");
   const [avatarUrl, setAvatarUrl] = useState("https://via.placeholder.com/150");
   const [phone, setPhone] = useState("123-456-7890");
@@ -48,24 +57,22 @@ const Dashboard: React.FC = () => {
     { name: "Water", icon: Droplet },
     { name: "Progress", icon: BarChart },
     { name: "Tips", icon: Lightbulb },
-    { name: "Notifications", icon: Bell },
+    { name: "Reminder", icon: Bell },
   ];
 
   // Dynamic content rendering
   const renderContent = () => {
     switch (activeSection) {
       case "Food Intake":
-        return <FoodIntake food={food} setFood={setFood} />;
+        return <FoodIntake userId={userId} />;  // Pass userId to FoodIntake
       case "Exercise":
-        return <ExerciseTracker exercise={exercise} setExercise={setExercise} />;
+        return <ExerciseTracker userId={userId}/>;
       case "Sleep":
         return <SleepTracker hoursSlept={hoursSlept} setHoursSlept={setHoursSlept} />;
       case "Water":
         return <WaterIntakeTracker waterIntake={waterIntake} setWaterIntake={setWaterIntake} />;
       case "Progress":
-        return <ProgressTracker totalCalories={food.reduce((acc, item) => acc + item.calories, 0)} 
-                                caloriesBurned={exercise.reduce((acc, item) => acc + item.caloriesBurned, 0)}
-                                goal={goal} />;
+        return <ProgressPage />;  // Integrate ProgressPage here
       case "Tips":
         return (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in">
@@ -73,7 +80,7 @@ const Dashboard: React.FC = () => {
             <FitnessTips />
           </div>
         );
-      case "Notifications":
+      case "Reminder":
         return <Notifications />;
       default:
         return;
@@ -109,7 +116,12 @@ const Dashboard: React.FC = () => {
         {/* Logout Button */}
         <div className="p-4">
           <button
-            onClick={() => navigate("/")}
+            onClick={() => {
+              localStorage.removeItem("userId"); // Clear userId on logout
+              localStorage.removeItem("token"); // Clear token
+              localStorage.removeItem("user"); // Clear user details
+              navigate("/");
+            }}
             className="w-full flex items-center justify-center px-4 py-3 text-white bg-red-600 hover:bg-red-700 rounded-lg transition-all shadow-lg">
             <LogOut className="mr-2 w-5 h-5" />
             Logout
@@ -138,7 +150,7 @@ const Dashboard: React.FC = () => {
               // name={name} avatarUrl={avatarUrl} phone={phone} email={email}
               // setName={setName} setAvatarUrl={setAvatarUrl} setPhone={setPhone} setEmail={setEmail}
               // setGoal={setGoal}
-              // goal={goal} hoursSlept={hoursSlept} waterIntake={waterIntake} workoutMinutes={0}            
+              // goal={goal} hoursSlept={hoursSlept} waterIntake={waterIntake} workoutMinutes={0}
             />
           </div>
         )}
